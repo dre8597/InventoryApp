@@ -2,14 +2,15 @@ package com.example.demondrelivingston.inventoryapp;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.demondrelivingston.inventoryapp.data.ProductContract.ProductEntry;
 
 /**
@@ -38,8 +39,8 @@ public class ProductCursorAdapter extends CursorAdapter {
     }
 
     /**
-     * This method binds the pet data (in the current row pointed to by cursor) to the given
-     * list item layout. For example, the name for the current pet can be set on the name TextView
+     * This method binds the product data (in the current row pointed to by cursor) to the given
+     * list item layout. For example, the name for the current product can be set on the name TextView
      * in the list item layout.
      *
      * @param view    Existing view, returned earlier by newView() method
@@ -61,17 +62,21 @@ public class ProductCursorAdapter extends CursorAdapter {
         int quantityColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_AMOUNT);
         int imageColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_IMAGE);
 
-        //Read the product attributes from the Cursor for the current pet
+        //Read the product attributes from the Cursor for the current product
         String productName = cursor.getString(nameColumnIndex);
-        int productPrice = cursor.getInt(priceColumnIndex);
+        String productPrice = cursor.getString(priceColumnIndex);
         int productQuantity = cursor.getInt(quantityColumnIndex);
-        int productImage = cursor.getInt(imageColumnIndex);
-
+        String quantity = "Quantity: "+String.valueOf(productQuantity) ;
+        Uri image = Uri.parse(cursor.getString(imageColumnIndex));
         //Update the TextViews with the attributes for the current product
         nameTextView.setText(productName);
-        priceTextView.setText(productPrice);
-        quantityTextView.setText(productQuantity);
-        //TODO://make sure this works right
-        imageView.setImageResource(productImage);
+        priceTextView.setText("$"+productPrice);
+        quantityTextView.setText(quantity);
+
+        //Use glide to show imported image
+        Glide.with(context).load(image).into(imageView);
+
+        final long id = cursor.getLong(cursor.getColumnIndex(ProductEntry._ID));
+
     }
 }

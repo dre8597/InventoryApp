@@ -7,9 +7,9 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -19,7 +19,7 @@ import com.example.demondrelivingston.inventoryapp.data.ProductContract.ProductE
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     /**
-     * Identifier for the pet data loader
+     * Identifier for the product data loader
      */
     private static final int PRODUCT_LOADER = 0;
 

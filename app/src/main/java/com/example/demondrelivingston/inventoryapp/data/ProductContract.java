@@ -32,16 +32,16 @@ public final class ProductContract {
     /**
      * Possible path (appended to base content URI for possible URI's)
      */
-    public static final String PATH_PRODUCTS = "inventoryapp";
+    public static final String PATH_PRODUCTS = "products";
 
     /**
-     * Inner class that defines constant values for the pets database table.
+     * Inner class that defines constant values for the products database table.
      * Each entry in the table represents a single product.
      */
     public static final class ProductEntry implements BaseColumns {
 
         /**
-         * The content URI to access the pet data in the provider
+         * The content URI to access the product data in the provider
          */
         public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_PRODUCTS);
         /**
@@ -62,7 +62,7 @@ public final class ProductContract {
         public final static String TABLE_NAME = "products";
 
         /**
-         * Unique ID number for the pet (only for use in the database table).
+         * Unique ID number for the product (only for use in the database table).
          * Type: INTEGER
          */
         public final static String _ID = BaseColumns._ID;
