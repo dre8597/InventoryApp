@@ -29,5 +29,6 @@
 
     <!-- Dialog button text for the option to keep editing the current item [CHAR LIMIT=20] -->
     <string name="keep_editing">Keep Editing</string>
+    <string name="supplier">Supplier: </string>
 
 </resources>

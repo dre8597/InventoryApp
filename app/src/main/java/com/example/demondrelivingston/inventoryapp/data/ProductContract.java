@@ -92,6 +92,13 @@ public final class ProductContract {
         public final static String COLUMN_PRODUCT_IMAGE = "image";
 
 
+        /**
+         * supplier of the product.
+         * Type: String
+         */
+        public final static String COLUMN_PRODUCT_SUPPLIER = "supplier";
+
+
 
     }
 }

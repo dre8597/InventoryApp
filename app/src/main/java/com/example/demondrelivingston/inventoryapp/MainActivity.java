@@ -80,7 +80,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 ProductEntry.COLUMN_PRODUCT_NAME,
                 ProductEntry.COLUMN_PRODUCT_PRICE,
                 ProductEntry.COLUMN_PRODUCT_IMAGE,
-                ProductEntry.COLUMN_PRODUCT_AMOUNT};
+                ProductEntry.COLUMN_PRODUCT_AMOUNT,
+                ProductEntry.COLUMN_PRODUCT_SUPPLIER};
 
         //This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,//Parent activity context
@@ -99,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        //Callback clled when the data needs to be deleted
+        //Callback called when the data needs to be deleted
         mCursorAdapter.swapCursor(null);
     }
 }

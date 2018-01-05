@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -59,6 +60,11 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private EditText mQuantityEditText;
 
     /**
+     * EditText field to enter the product's supplier
+     */
+    private EditText mSupplierEditText;
+
+    /**
      * ImageView field to add picture of product being added
      */
     private ImageButton mProductImageView;
@@ -72,6 +78,32 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
      * String variable for holding images
      */
     private String mCurrentPhotoUri = "No images";
+
+    /**
+     * Button variable for placing orders
+     */
+    private Button mOrderButton;
+
+    /**
+     * Starter email for supplier
+     */
+    private String mEmail;
+
+    /**
+     * product name for it's order
+     */
+    private String mOrderName;
+
+    /**
+     * Button for incrementing the quantity of product
+     */
+    private ImageButton mIncreaseButton;
+
+    /**
+     * Button for decrementing the quantity of product
+     */
+    private ImageButton mDecreaseButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstance) {
@@ -103,10 +135,16 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mPriceEditText = (EditText) findViewById(R.id.edit_product_price);
         mQuantityEditText = (EditText) findViewById(R.id.edit_product_quantity);
         mProductImageView = (ImageButton) findViewById(R.id.image);
+        mSupplierEditText = (EditText) findViewById(R.id.edit_product_supplier);
+        mOrderButton = (Button) findViewById(R.id.order_button);
+        mIncreaseButton = (ImageButton) findViewById(R.id.upButton);
+        mDecreaseButton = (ImageButton) findViewById(R.id.downButton);
+
 
         mNameEditText.setOnTouchListener(mTouchListener);
         mPriceEditText.setOnTouchListener(mTouchListener);
         mQuantityEditText.setOnTouchListener(mTouchListener);
+        mSupplierEditText.setOnTouchListener(mTouchListener);
 
         mProductImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,6 +158,42 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 }
             }
         });
+
+        mOrderButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String[] TO = {mEmail};
+                Intent emailIntent = new Intent(Intent.ACTION_SEND);
+
+                emailIntent.setData(Uri.parse("mailto:"));
+                emailIntent.setType("text/plain");
+                emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Order " + mOrderName);
+                emailIntent.putExtra(Intent.EXTRA_TEXT, "Request for: 75 " + mOrderName);
+
+                try {
+                    startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+                } catch (android.content.ActivityNotFoundException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        //increase quantity by one when up button pressed
+        mIncreaseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                increaseQuantity();
+            }
+        });
+
+        //Decrease quantity by one when down button pressed
+        mDecreaseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                decreaseQuantity();
+            }
+        });
     }
 
     /**
@@ -131,6 +205,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         String nameString = mNameEditText.getText().toString().trim();
         String priceString = mPriceEditText.getText().toString().trim();
         String quantityString = mQuantityEditText.getText().toString().trim();
+        String supplier = mSupplierEditText.getText().toString().trim();
 
         //Check if this is supposed to be a new product and
         //check if all the fields in the editor are blank
@@ -154,6 +229,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         values.put(ProductEntry.COLUMN_PRODUCT_NAME, nameString);
         values.put(ProductEntry.COLUMN_PRODUCT_PRICE, price);
         values.put(ProductEntry.COLUMN_PRODUCT_AMOUNT, quantity);
+        values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER, supplier);
 
         if (mCurrentProductUri == null) {
             //Insert a new product into the provider, returning the content URI for the new product.
@@ -244,7 +320,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 ProductEntry.COLUMN_PRODUCT_NAME,
                 ProductEntry.COLUMN_PRODUCT_PRICE,
                 ProductEntry.COLUMN_PRODUCT_AMOUNT,
-                ProductEntry.COLUMN_PRODUCT_IMAGE};
+                ProductEntry.COLUMN_PRODUCT_IMAGE,
+                ProductEntry.COLUMN_PRODUCT_SUPPLIER};
 
         //This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,
@@ -271,18 +348,26 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             int priceColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_PRICE);
             int quantityColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_AMOUNT);
             int imageColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_IMAGE);
+            int supplierColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_SUPPLIER);
+            int idColumnIndex = cursor.getColumnIndex(ProductEntry._ID);
+
 
             //Extract out the value from the Cursor for the given column index
             String name = cursor.getString(nameColumnIndex);
+            String supplier = cursor.getString(supplierColumnIndex);
             int price = cursor.getInt(priceColumnIndex);
             int quantity = cursor.getInt(quantityColumnIndex);
-            String image = cursor.getString(imageColumnIndex);
+            int id = cursor.getInt(idColumnIndex);
             mCurrentPhotoUri = cursor.getString(imageColumnIndex);
+
+            mEmail = "restock@" + supplier + ".net";
+            mOrderName = "Product id: " + id + " -" + name;
 
             //Update the views on the screen with the values from the database
             mNameEditText.setText(name);
-            mPriceEditText.setText(price);
-            mQuantityEditText.setText(quantity);
+            mPriceEditText.setText(String.valueOf(price));
+            mQuantityEditText.setText(String.valueOf(quantity));
+            mSupplierEditText.setText(supplier);
 
             //Update the photo using glide api
             Glide.with(this)
@@ -419,5 +504,29 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         }
         //Close the activity
         finish();
+    }
+
+    /**
+     * Perform increase of current quantity
+     */
+    private void increaseQuantity() {
+        int start = Integer.parseInt(mQuantityEditText.getText().toString());
+        start++;
+
+        mQuantityEditText.setText(String.valueOf(start));
+    }
+
+    /**
+     * Perform decrease of current quantity
+     */
+    private void decreaseQuantity() {
+        int start = Integer.parseInt(mQuantityEditText.getText().toString());
+        start--;
+        if (start < 0) {
+            Toast.makeText(this, "Quantity must be above 0", Toast.LENGTH_SHORT).show();
+            start = 0;
+            return;
+        }
+        mQuantityEditText.setText(String.valueOf(start));
     }
 }
