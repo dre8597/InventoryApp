@@ -226,14 +226,14 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         String price = "$0";
         if (!TextUtils.isEmpty(priceString)) {
-            price = priceString;
+            priceString = price;
         }
 
         //Create a ContentValues object where column names are the keys.
         //and product attributes from the editor are the values.
         ContentValues values = new ContentValues();
         values.put(ProductEntry.COLUMN_PRODUCT_NAME, nameString);
-        values.put(ProductEntry.COLUMN_PRODUCT_PRICE, price);
+        values.put(ProductEntry.COLUMN_PRODUCT_PRICE, priceString);
         values.put(ProductEntry.COLUMN_PRODUCT_AMOUNT, quantity);
         values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER, supplier);
         values.put(ProductEntry.COLUMN_PRODUCT_IMAGE, imageUri.toString());

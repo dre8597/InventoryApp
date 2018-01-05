@@ -156,6 +156,11 @@ public class ProductProvider extends ContentProvider {
             throw new IllegalArgumentException("Product requires valid amount");
         }
 
+        String images = values.getAsString(ProductEntry.COLUMN_PRODUCT_IMAGE);
+        if (images == null) {
+            throw new IllegalArgumentException("Product requires a valid image");
+        }
+
         //Get writeable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
