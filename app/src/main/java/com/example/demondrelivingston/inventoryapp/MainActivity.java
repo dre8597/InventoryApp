@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.demondrelivingston.inventoryapp.data.ProductContract.ProductEntry;
+import com.example.demondrelivingston.inventoryapp.data.ProductDbHelper;
 
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -28,6 +29,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
      */
     ProductCursorAdapter mCursorAdapter;
 
+    /**
+     * Object for DbHelper
+     */
+    private ProductDbHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,5 +107,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onLoaderReset(Loader<Cursor> loader) {
         //Callback called when the data needs to be deleted
         mCursorAdapter.swapCursor(null);
+    }
+
+    //Method used to buy items
+    public void itemSold(long id, int quantity){
+        dbHelper.saleMade(id,quantity);
+        mCursorAdapter.swapCursor(dbHelper.readStock());
     }
 }

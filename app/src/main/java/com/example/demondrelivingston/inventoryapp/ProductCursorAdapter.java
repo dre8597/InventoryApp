@@ -6,11 +6,11 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.example.demondrelivingston.inventoryapp.data.ProductContract.ProductEntry;
 
 /**
@@ -19,8 +19,12 @@ import com.example.demondrelivingston.inventoryapp.data.ProductContract.ProductE
 
 public class ProductCursorAdapter extends CursorAdapter {
 
+    //Object from mainActivity
+    private final MainActivity activity;
+
     public ProductCursorAdapter(Context context, Cursor c) {
         super(context, c, 0/*flags*/);
+        this.activity= (MainActivity) context;
     }
 
     /**
@@ -55,6 +59,7 @@ public class ProductCursorAdapter extends CursorAdapter {
         TextView priceTextView = (TextView) view.findViewById(R.id.price);
         TextView quantityTextView = (TextView) view.findViewById(R.id.quantity);
         ImageView imageView = (ImageView) view.findViewById(R.id.picture);
+        Button buy = (Button) view.findViewById(R.id.buy_button);
 
         //Find the columns of product attributes that we're interested in
         int nameColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_NAME);
@@ -65,18 +70,22 @@ public class ProductCursorAdapter extends CursorAdapter {
         //Read the product attributes from the Cursor for the current product
         String productName = cursor.getString(nameColumnIndex);
         String productPrice = cursor.getString(priceColumnIndex);
-        int productQuantity = cursor.getInt(quantityColumnIndex);
-        String quantity = "Quantity: "+String.valueOf(productQuantity) ;
+        final int productQuantity = cursor.getInt(quantityColumnIndex);
+        final String quantity = "Quantity: " + String.valueOf(productQuantity);
         Uri image = Uri.parse(cursor.getString(imageColumnIndex));
         //Update the TextViews with the attributes for the current product
         nameTextView.setText(productName);
-        priceTextView.setText("$"+productPrice);
+        priceTextView.setText("$" + productPrice);
         quantityTextView.setText(quantity);
+        imageView.setImageURI(image);
 
-        //Use glide to show imported image
-        Glide.with(context).load(image).into(imageView);
-
-        final long id = cursor.getLong(cursor.getColumnIndex(ProductEntry._ID));
-
+        //TODO://Find out how to get buy button to work
+//        final long id =cursor.getLong(cursor.getColumnIndex(ProductEntry._ID));
+//        buy.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                activity.itemSold(id, productQuantity);
+//            }
+//        });
     }
 }

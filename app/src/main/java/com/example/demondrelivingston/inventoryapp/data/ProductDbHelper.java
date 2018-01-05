@@ -1,6 +1,8 @@
 package com.example.demondrelivingston.inventoryapp.data;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -44,5 +46,40 @@ public class ProductDbHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
+    }
+
+    public void saleMade(long itemId, int amount) {
+        SQLiteDatabase db = getWritableDatabase();
+        int newAmount = 0;
+        if (amount > 0) {
+            newAmount = amount - 1;
+        }
+        ContentValues values = new ContentValues();
+        values.put(ProductEntry.COLUMN_PRODUCT_AMOUNT, String.valueOf(newAmount));
+        String selection = ProductEntry._ID + "=?";
+        String[] selectionArgs = new String[]{String.valueOf(itemId)};
+        db.update(ProductEntry.TABLE_NAME, values, selection, selectionArgs);
+    }
+
+    public Cursor readStock() {
+        SQLiteDatabase db = getReadableDatabase();
+        String[] projection = {
+                ProductEntry._ID,
+                ProductEntry.COLUMN_PRODUCT_NAME,
+                ProductEntry.COLUMN_PRODUCT_PRICE,
+                ProductEntry.COLUMN_PRODUCT_AMOUNT,
+                ProductEntry.COLUMN_PRODUCT_SUPPLIER,
+                ProductEntry.COLUMN_PRODUCT_IMAGE};
+
+        Cursor cursor = db.query(
+                ProductEntry.TABLE_NAME,
+                projection,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        return cursor;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.demondrelivingston.inventoryapp;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentValues;
@@ -22,7 +23,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.example.demondrelivingston.inventoryapp.data.ProductContract.ProductEntry;
 
 /**
@@ -104,6 +104,10 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
      */
     private ImageButton mDecreaseButton;
 
+    /**
+     * Image uri
+     */
+    Uri imageUri;
 
     @Override
     protected void onCreate(Bundle savedInstance) {
@@ -230,6 +234,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         values.put(ProductEntry.COLUMN_PRODUCT_PRICE, price);
         values.put(ProductEntry.COLUMN_PRODUCT_AMOUNT, quantity);
         values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER, supplier);
+        values.put(ProductEntry.COLUMN_PRODUCT_IMAGE, imageUri.toString());
 
         if (mCurrentProductUri == null) {
             //Insert a new product into the provider, returning the content URI for the new product.
@@ -369,11 +374,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             mQuantityEditText.setText(String.valueOf(quantity));
             mSupplierEditText.setText(supplier);
 
-            //Update the photo using glide api
-            Glide.with(this)
-                    .load(mCurrentPhotoUri)
-                    .into(mProductImageView);
-
 
         }
     }
@@ -433,7 +433,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     private void showDeleteConfirmationDialog() {
         // Create an AlertDialog.Builder and set the message, and click listeners
-        // for the postivie and negative buttons on the dialog.
+        // for the positive and negative buttons on the dialog.
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.delete_dialog_msg);
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
@@ -528,5 +528,16 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             return;
         }
         mQuantityEditText.setText(String.valueOf(start));
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        if (requestCode == RESULT_LOAD_IMAGE && resultCode == Activity.RESULT_OK) {
+            if (resultData != null) {
+                imageUri = resultData.getData();
+                mProductImageView.setImageURI(imageUri);
+                mProductImageView.invalidate();
+            }
+        }
     }
 }
