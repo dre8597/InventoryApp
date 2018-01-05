@@ -50,12 +50,11 @@ public class ProductDbHelper extends SQLiteOpenHelper {
 
     public void saleMade(long itemId, int amount) {
         SQLiteDatabase db = getWritableDatabase();
-        int newAmount = 0;
         if (amount > 0) {
-            newAmount = amount - 1;
+            amount--;
         }
         ContentValues values = new ContentValues();
-        values.put(ProductEntry.COLUMN_PRODUCT_AMOUNT, String.valueOf(newAmount));
+        values.put(ProductEntry.COLUMN_PRODUCT_AMOUNT, String.valueOf(amount));
         String selection = ProductEntry._ID + "=?";
         String[] selectionArgs = new String[]{String.valueOf(itemId)};
         db.update(ProductEntry.TABLE_NAME, values, selection, selectionArgs);

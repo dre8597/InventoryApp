@@ -22,9 +22,9 @@ public class ProductCursorAdapter extends CursorAdapter {
     //Object from mainActivity
     private final MainActivity activity;
 
-    public ProductCursorAdapter(Context context, Cursor c) {
+    public ProductCursorAdapter(MainActivity context, Cursor c) {
         super(context, c, 0/*flags*/);
-        this.activity= (MainActivity) context;
+        this.activity = context;
     }
 
     /**
@@ -79,13 +79,15 @@ public class ProductCursorAdapter extends CursorAdapter {
         quantityTextView.setText(quantity);
         imageView.setImageURI(image);
 
-        //TODO://Find out how to get buy button to work
-//        final long id =cursor.getLong(cursor.getColumnIndex(ProductEntry._ID));
-//        buy.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                activity.itemSold(id, productQuantity);
-//            }
-//        });
+        final int quantitys = cursor.getInt(cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_AMOUNT));
+
+        final long id = cursor.getLong(cursor.getColumnIndex(ProductEntry._ID));
+
+        buy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                activity.itemSold(id, quantitys);
+            }
+        });
     }
 }

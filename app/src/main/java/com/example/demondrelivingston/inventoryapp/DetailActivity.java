@@ -1,5 +1,6 @@
 package com.example.demondrelivingston.inventoryapp;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
@@ -109,6 +110,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
      */
     Uri imageUri;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
