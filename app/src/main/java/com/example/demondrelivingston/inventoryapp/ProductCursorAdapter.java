@@ -1,8 +1,11 @@
 package com.example.demondrelivingston.inventoryapp;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,14 +13,18 @@ import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.demondrelivingston.inventoryapp.data.ProductContract.ProductEntry;
+import com.example.demondrelivingston.inventoryapp.data.ProductProvider;
 
 /**
  * Created by demondrelivingston on 1/2/18.
  */
 
 public class ProductCursorAdapter extends CursorAdapter {
+
+    public static final String LOG_TAG = ProductProvider.class.getSimpleName();
 
     //Object from mainActivity
     private final MainActivity activity;
@@ -53,7 +60,7 @@ public class ProductCursorAdapter extends CursorAdapter {
      *                correct row.
      */
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, final Context context, final Cursor cursor) {
         //Find individual views that we want to modify in the list item layout
         TextView nameTextView = (TextView) view.findViewById(R.id.product_name);
         TextView priceTextView = (TextView) view.findViewById(R.id.price);
@@ -66,28 +73,52 @@ public class ProductCursorAdapter extends CursorAdapter {
         int priceColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_PRICE);
         int quantityColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_AMOUNT);
         int imageColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_IMAGE);
+        final int idColumnIndex = cursor.getInt(cursor.getColumnIndex(ProductEntry._ID));
 
         //Read the product attributes from the Cursor for the current product
         String productName = cursor.getString(nameColumnIndex);
         String productPrice = cursor.getString(priceColumnIndex);
         final int productQuantity = cursor.getInt(quantityColumnIndex);
         final String quantity = "Quantity: " + String.valueOf(productQuantity);
-        Uri image = Uri.parse(cursor.getString(imageColumnIndex));
+        String imageUriString = cursor.getString(imageColumnIndex);
+        Uri image = Uri.parse(imageUriString);
+
         //Update the TextViews with the attributes for the current product
         nameTextView.setText(productName);
-        priceTextView.setText("$" + productPrice);
+        priceTextView.setText(productPrice);
         quantityTextView.setText(quantity);
         imageView.setImageURI(image);
 
-        final int quantitys = cursor.getInt(cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_AMOUNT));
-
-        final long id = cursor.getLong(cursor.getColumnIndex(ProductEntry._ID));
 
         buy.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                activity.itemSold(id, quantitys);
+            public void onClick(View viexw) {
+                Uri productUri = ContentUris.withAppendedId(ProductEntry.CONTENT_URI, idColumnIndex);
+                itemSold(context, productUri, productQuantity);
             }
         });
+    }
+
+    private void itemSold(Context context, Uri productUri, int currentQuantityInStock) {
+
+        // Subtract 1 from current value if quantity of product >= 1
+        int newQuantityValue = (currentQuantityInStock >= 1) ? currentQuantityInStock - 1 : 0;
+
+        if (currentQuantityInStock == 0) {
+            Toast.makeText(context.getApplicationContext(), "Item is out of stock", Toast.LENGTH_SHORT).show();
+        }
+
+        // Update table by using new value of quantity
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(ProductEntry.COLUMN_PRODUCT_AMOUNT, newQuantityValue);
+        int numRowsUpdated = context.getContentResolver().update(productUri, contentValues, null, null);
+        if (numRowsUpdated > 0) {
+            // Show error message in Logs with info about pass update.
+            Log.i(LOG_TAG, "Item has been sold");
+        } else {
+            Toast.makeText(context.getApplicationContext(), "Item is currently out of stock", Toast.LENGTH_SHORT).show();
+            // Show error message in Logs with info about fail update.
+            Log.e(LOG_TAG, "Issue with restocking");
+        }
     }
 }

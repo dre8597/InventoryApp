@@ -248,15 +248,6 @@ public class ProductProvider extends ContentProvider {
             }
         }
 
-        // If the {@link ProductEntry#COLUMN_PRODUCT_PRICE} key is present,
-        // check that the gender value is valid.
-        if (values.containsKey(ProductEntry.COLUMN_PRODUCT_PRICE)) {
-            Integer price = values.getAsInteger(ProductEntry.COLUMN_PRODUCT_PRICE);
-            if (price == null || price < 0) {
-                throw new IllegalArgumentException("product requires valid price");
-            }
-        }
-
         // If the {@link ProductEntry#COLUMN_PRODCT_AMOUNT} key is present,
         // check that the quantity value is valid.
         if (values.containsKey(ProductEntry.COLUMN_PRODUCT_AMOUNT)) {

@@ -155,6 +155,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mProductImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 Intent intent = new Intent(Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 intent.setType("image/*");
@@ -162,6 +163,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                     startActivityForResult(Intent.createChooser(intent, "Select Image From"),
                             RESULT_LOAD_IMAGE);
                 }
+
             }
         });
 
@@ -215,17 +217,20 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         //Check if this is supposed to be a new product and
         //check if all the fields in the editor are blank
-        if (mCurrentProductUri == null && TextUtils.isEmpty(nameString) && TextUtils.isEmpty(priceString)
+        if (mCurrentProductUri == null &&
+                TextUtils.isEmpty(nameString) &&
+                TextUtils.isEmpty(priceString)
                 && TextUtils.isEmpty(quantityString)) {
             return;
         }
+
         int quantity = 0;
         if (!TextUtils.isEmpty(quantityString)) {
             quantity = Integer.parseInt(quantityString);
         }
 
         String price = "$0";
-        if (!TextUtils.isEmpty(priceString)) {
+        if (TextUtils.isEmpty(priceString)) {
             priceString = price;
         }
 
@@ -362,7 +367,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             //Extract out the value from the Cursor for the given column index
             String name = cursor.getString(nameColumnIndex);
             String supplier = cursor.getString(supplierColumnIndex);
-            int price = cursor.getInt(priceColumnIndex);
+            String price = cursor.getString(priceColumnIndex);
             int quantity = cursor.getInt(quantityColumnIndex);
             int id = cursor.getInt(idColumnIndex);
             mCurrentPhotoUri = cursor.getString(imageColumnIndex);
@@ -372,9 +377,11 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
             //Update the views on the screen with the values from the database
             mNameEditText.setText(name);
-            mPriceEditText.setText(String.valueOf(price));
+            mPriceEditText.setText(price);
             mQuantityEditText.setText(String.valueOf(quantity));
             mSupplierEditText.setText(supplier);
+            imageUri = Uri.parse(mCurrentPhotoUri);
+            mProductImageView.setImageURI(imageUri);
 
 
         }
@@ -385,8 +392,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         //If the loader is invalidated, clear out all the data from the input fields.
         mNameEditText.setText("");
-        mPriceEditText.setText("$0");
-        mQuantityEditText.setText("0");
+        mPriceEditText.setText("");
+        mQuantityEditText.setText("");
 
     }
 
