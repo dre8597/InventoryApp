@@ -15,7 +15,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.demondrelivingston.inventoryapp.data.ProductContract.ProductEntry;
-import com.example.demondrelivingston.inventoryapp.data.ProductDbHelper;
 
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -28,11 +27,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
      * Adapter for the ListView
      */
     ProductCursorAdapter mCursorAdapter;
-
-    /**
-     * Object for DbHelper
-     */
-    private ProductDbHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

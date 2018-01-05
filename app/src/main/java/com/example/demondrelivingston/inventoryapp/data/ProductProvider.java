@@ -258,6 +258,14 @@ public class ProductProvider extends ContentProvider {
             }
         }
 
+        //If price key is present, check if it's valid
+        if (values.containsKey(ProductEntry.COLUMN_PRODUCT_PRICE)) {
+            Integer price = values.getAsInteger((ProductEntry.COLUMN_PRODUCT_PRICE));
+            if (price != null && price < 0) {
+                throw new IllegalArgumentException("product requires valid quantity");
+            }
+        }
+
         // No need to check the breed, any value is valid (including null).
 
         // If there are no values to update, then don't try to update the database

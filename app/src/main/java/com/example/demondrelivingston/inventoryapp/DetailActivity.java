@@ -106,6 +106,11 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private ImageButton mDecreaseButton;
 
     /**
+     * Boolean used to find status of all required fields being populated
+     */
+    boolean hasValidValues = false;
+
+    /**
      * Image uri
      */
     Uri imageUri;
@@ -207,7 +212,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     /**
      * Get user input from editor and save new product into database.
      */
-    private void saveProduct() {
+    private boolean saveProduct() {
         //Read from input fields
         //Use trim to eliminate leading or trailing white space
         String nameString = mNameEditText.getText().toString().trim();
@@ -220,28 +225,52 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         if (mCurrentProductUri == null &&
                 TextUtils.isEmpty(nameString) &&
                 TextUtils.isEmpty(priceString)
-                && TextUtils.isEmpty(quantityString)) {
-            return;
-        }
-
-        int quantity = 0;
-        if (!TextUtils.isEmpty(quantityString)) {
-            quantity = Integer.parseInt(quantityString);
-        }
-
-        String price = "$0";
-        if (TextUtils.isEmpty(priceString)) {
-            priceString = price;
+                && TextUtils.isEmpty(quantityString) &&
+                TextUtils.isEmpty(imageUri.toString()) &&
+                imageUri == null) {
+            hasValidValues = true;
+            return hasValidValues;
         }
 
         //Create a ContentValues object where column names are the keys.
         //and product attributes from the editor are the values.
         ContentValues values = new ContentValues();
-        values.put(ProductEntry.COLUMN_PRODUCT_NAME, nameString);
-        values.put(ProductEntry.COLUMN_PRODUCT_PRICE, priceString);
-        values.put(ProductEntry.COLUMN_PRODUCT_AMOUNT, quantity);
+
+        // REQUIRED VALUES
+        // Validation section
+        if (TextUtils.isEmpty(nameString)) {
+            Toast.makeText(this, "Product name is required", Toast.LENGTH_SHORT).show();
+            return hasValidValues;
+        } else {
+            values.put(ProductEntry.COLUMN_PRODUCT_NAME, nameString);
+        }
+
+        if (TextUtils.isEmpty(quantityString)) {
+            Toast.makeText(this, "Quantity is required", Toast.LENGTH_SHORT).show();
+            return hasValidValues;
+        } else {
+            // If the quantity is not provided by the user, don't try to parse the string into an
+            // integer value. Use 0 by default.
+            int quantity = Integer.parseInt(quantityString);
+            values.put(ProductEntry.COLUMN_PRODUCT_AMOUNT, quantity);
+        }
+
+        if (TextUtils.isEmpty(priceString)) {
+            Toast.makeText(this, "Product requires a price", Toast.LENGTH_SHORT).show();
+            return hasValidValues;
+        } else {
+            values.put(ProductEntry.COLUMN_PRODUCT_PRICE, priceString);
+        }
+
+        if (imageUri == null) {
+            Toast.makeText(this, "Product requires an image", Toast.LENGTH_SHORT).show();
+            return hasValidValues;
+        } else {
+            values.put(ProductEntry.COLUMN_PRODUCT_IMAGE, imageUri.toString());
+        }
+
+        //Possible value
         values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER, supplier);
-        values.put(ProductEntry.COLUMN_PRODUCT_IMAGE, imageUri.toString());
 
         if (mCurrentProductUri == null) {
             //Insert a new product into the provider, returning the content URI for the new product.
@@ -258,6 +287,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                         Toast.LENGTH_SHORT).show();
             }
         } else {
+
             int rowsAffected = getContentResolver().update(mCurrentProductUri, values, null, null);
 
             //Show a toast message depending on whether or not the update was successful.
@@ -267,7 +297,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 Toast.makeText(this, "Restock of order successful", Toast.LENGTH_SHORT).show();
             }
         }
-
+        hasValidValues = true;
+        return hasValidValues;
 
     }
 
