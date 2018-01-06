@@ -226,7 +226,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 TextUtils.isEmpty(nameString) &&
                 TextUtils.isEmpty(priceString)
                 && TextUtils.isEmpty(quantityString) &&
-                TextUtils.isEmpty(imageUri.toString()) &&
                 imageUri == null) {
             hasValidValues = true;
             return hasValidValues;
