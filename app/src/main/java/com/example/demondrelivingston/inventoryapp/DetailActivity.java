@@ -211,6 +211,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     /**
      * Get user input from editor and save new product into database.
+     * Method is set as boolean so that if anything is missing when you try to save
+     * It internally cancels itself and makes you finish adding everything.
      */
     private boolean saveProduct() {
         //Read from input fields
@@ -271,6 +273,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         if (TextUtils.isEmpty(supplier)) {
             Toast.makeText(this, "Product requires a supplier", Toast.LENGTH_SHORT).show();
+            return hasValidValues;
         } else {
             values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER, supplier);
         }
@@ -320,6 +323,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
                 // Save product to database
+                //Right here it would return false or true and won't let you continue
                 saveProduct();
                 if (hasValidValues) {
                     finish();
