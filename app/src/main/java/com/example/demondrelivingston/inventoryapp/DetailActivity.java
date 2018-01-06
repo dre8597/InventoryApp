@@ -226,6 +226,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 TextUtils.isEmpty(nameString) &&
                 TextUtils.isEmpty(priceString)
                 && TextUtils.isEmpty(quantityString) &&
+                TextUtils.isEmpty(supplier) &&
                 imageUri == null) {
             hasValidValues = true;
             return hasValidValues;
@@ -268,8 +269,12 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             values.put(ProductEntry.COLUMN_PRODUCT_IMAGE, imageUri.toString());
         }
 
-        //Possible value
-        values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER, supplier);
+        if (TextUtils.isEmpty(supplier)) {
+            Toast.makeText(this, "Product requires a supplier", Toast.LENGTH_SHORT).show();
+        } else {
+            values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER, supplier);
+        }
+
 
         if (mCurrentProductUri == null) {
             //Insert a new product into the provider, returning the content URI for the new product.
@@ -298,7 +303,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         }
         hasValidValues = true;
         return hasValidValues;
-
     }
 
     @Override
@@ -317,8 +321,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             case R.id.action_save:
                 // Save product to database
                 saveProduct();
-                // Exit activity
-                finish();
+                if (hasValidValues) {
+                    finish();
+                }
                 return true;
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
